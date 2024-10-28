@@ -1,13 +1,21 @@
+# Obtenir le répertoire de travail courant
+$currentDir = Get-Location
+
 # Liste des modules à regrouper
-# On va mettre dans un tableau les différents modules qui nous intéressent
 $modules = @('Microsoft.PowerShell.Management', 'Microsoft.PowerShell.Utility', 'PackageManagement')
 
-# Choisir le chemin où tous ces modules iront
-$destinationPath = "C:\ModulesRegroupes"
+# Chemin du répertoire de destination pour les modules regroupés
+$destinationPath = Join-Path -Path $currentDir -ChildPath "ModulesRegroupes"
 
-# Vérifier si le répertoire existe sinon on le recrée
+# Chemin du fichier ZIP pour la compression des modules
+$zipPath = Join-Path -Path $currentDir -ChildPath "ModulesRegroupes.zip"
+
+# Vérifier si le répertoire de destination existe, sinon le créer
 if (!(Test-Path -Path $destinationPath)) {
     New-Item -ItemType Directory -Path $destinationPath -Force
+    Write-Host "Répertoire créé : $destinationPath"
+} else {
+    Write-Host "Le répertoire $destinationPath existe déjà."
 }
 
 foreach ($module in $modules) {
@@ -37,26 +45,13 @@ foreach ($module in $modules) {
     }
 }
 
-# Chemin du fichier ZIP
-$zipPath = "C:\ModulesRegroupes.zip"
-
 # Supprimer le fichier ZIP existant s'il existe
 if (Test-Path -Path $zipPath) {
     Remove-Item -Path $zipPath -Force
+    Write-Host "Fichier ZIP existant supprimé : $zipPath"
 }
 
 # Compresser le répertoire de modules
 Compress-Archive -Path "$destinationPath\*" -DestinationPath $zipPath -Force
 
 Write-Host "Modules regroupés et compressés dans '$zipPath'."
-
-<#
-.SYNOPSIS
-    Script pour regrouper les modules nécessaires.
-
-.DESCRIPTION
-    Ce script copie les modules spécifiés vers un répertoire et les compresse pour le partage.
-
-.EXAMPLE
-    .\RegrouperModules.ps1
-#>
