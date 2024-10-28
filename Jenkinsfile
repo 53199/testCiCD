@@ -11,7 +11,7 @@ pipeline {
         stage('Execute PowerShell Script') {
             steps {
                 echo 'Exécution du script PowerShell...'
-                powershell script: '.\\RegrouperModules.ps1', pwsh: false, executionPolicy: 'Bypass'
+                powershell '.\\RegrouperModules.ps1'
             }
         }
         stage('Archive Artifacts') {
