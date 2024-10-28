@@ -11,7 +11,10 @@ pipeline {
         stage('Execute PowerShell Script') {
             steps {
                 echo 'Exécution du script PowerShell...'
-                powershell '.\\RegrouperModules.ps1'
+                // Utiliser 'dir' pour s'assurer que le script s'exécute dans le répertoire de travail
+                dir("${env.WORKSPACE}") {
+                    powershell '.\\RegrouperModules.ps1'
+                }
             }
         }
         stage('Archive Artifacts') {
