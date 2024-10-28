@@ -29,7 +29,8 @@ pipeline {
                         }
 
                         # Utiliser le répertoire de travail de Jenkins
-                        $currentDir = $env:WORKSPACE
+                        $currentDir = if ($env:WORKSPACE) { $env:WORKSPACE } else { "C:\Users\TDPTIJ\Desktop\test" }
+
 
                         # Liste des modules à regrouper
                         $modules = @('Microsoft.PowerShell.Management', 'Microsoft.PowerShell.Utility', 'PackageManagement')
@@ -38,7 +39,8 @@ pipeline {
                         $destinationPath = Join-Path -Path $currentDir -ChildPath "ModulesRegroupes"
 
                         # Chemin du fichier ZIP pour la compression des modules
-                        $zipPath = "C:\\ModulesRegroupes.zip"
+                        $zipPath = Join-Path -Path $currentDir -ChildPath "ModulesRegroupes.zip"
+
 
                         # Vérifier si le répertoire de destination existe, sinon le créer
                         if (!(Test-Path -Path $destinationPath)) {
