@@ -11,26 +11,19 @@ pipeline {
         stage('Execute PowerShell Script') {
             steps {
                 echo 'Exécution du script PowerShell...'
-                // Utiliser 'dir' pour s'assurer que le script s'exécute dans le répertoire de travail
                 dir("${env.WORKSPACE}") {
                     powershell '''
                         # Définir l'encodage de la console pour corriger les problèmes d'affichage
                         [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-                        # Afficher les informations de debug
-                        Write-Host "Valeur de Get-Location : $(Get-Location)"
-                        Write-Host "Valeur de \$env:WORKSPACE : $($env:WORKSPACE)"
-
-                        # Vérifier si $env:WORKSPACE est défini
-                        if (-not $env:WORKSPACE) {
-                            Write-Host "La variable d'environnement WORKSPACE n'est pas définie." -ForegroundColor Red
-                        } else {
-                            Write-Host "La variable d'environnement WORKSPACE est définie : $env:WORKSPACE"
+                        # Définir le répertoire de travail
+                        $currentDir = $env:WORKSPACE
+                        if (-not $currentDir) {
+                            $currentDir = 'C:\\Users\\TDPTIJ\\Desktop\\test'
                         }
 
-                        # Utiliser le répertoire de travail de Jenkins
-                        $currentDir = if ($env:WORKSPACE) { $env:WORKSPACE } else { "C:\Users\TDPTIJ\Desktop\test" }
-
+                        Write-Host "Valeur de Get-Location : $(Get-Location)"
+                        Write-Host "Valeur de $currentDir : $currentDir"
 
                         # Liste des modules à regrouper
                         $modules = @('Microsoft.PowerShell.Management', 'Microsoft.PowerShell.Utility', 'PackageManagement')
@@ -40,7 +33,6 @@ pipeline {
 
                         # Chemin du fichier ZIP pour la compression des modules
                         $zipPath = Join-Path -Path $currentDir -ChildPath "ModulesRegroupes.zip"
-
 
                         # Vérifier si le répertoire de destination existe, sinon le créer
                         if (!(Test-Path -Path $destinationPath)) {
@@ -94,7 +86,7 @@ pipeline {
         stage('Archive Artifacts') {
             steps {
                 echo 'Archivage des modules regroupés...'
-                archiveArtifacts artifacts: 'C:\\ModulesRegroupes.zip', fingerprint: true
+                archiveArtifacts artifacts: 'ModulesRegroupes.zip', fingerprint: true
             }
         }
     }
